@@ -1,0 +1,9 @@
+.DS_STORE
+.github
+.vscode
+.idea
+.venv
+__pycache__/
+.pytest_cache/
+.ipynb_checkpoints/
+.ruff_cache/

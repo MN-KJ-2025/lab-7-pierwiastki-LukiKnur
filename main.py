@@ -12,6 +12,17 @@ import numpy.polynomial.polynomial as nppoly
 
 
 def roots_20(coef: np.ndarray) -> tuple[np.ndarray, np.ndarray] | None:
+    
+    if not isinstance(coef,np.ndarray):
+        return None
+    if coef.ndim != 1:
+        return None
+    
+    wspl_zaburzony=coef + (10**(-10)*np.random.random_sample(coef.shape))
+
+    vec_roots=nppoly.polyroots(wspl_zaburzony)
+
+    return wspl_zaburzony, vec_roots
     """Funkcja wyznaczająca miejsca zerowe wielomianu funkcją
     `nppoly.polyroots()`, najpierw lekko zaburzając wejściowe współczynniki 
     wielomianu (N(0,1) * 1e-10).
@@ -29,6 +40,27 @@ def roots_20(coef: np.ndarray) -> tuple[np.ndarray, np.ndarray] | None:
 
 
 def frob_a(coef: np.ndarray) -> np.ndarray | None:
+  
+    if coef is None or not isinstance(coef, np.ndarray):
+        return None
+    if coef.ndim != 1:
+        return None
+    if coef.size < 2:
+        return None
+    
+    a_n = coef[-1]          
+    if a_n == 0:
+        return None 
+    
+    n=coef.size-1
+    I=np.eye(n-1)
+    coef_final=np.delete(coef,-1)/coef[-1]
+    
+    zeros=np.full((n-1,1),0)
+    zeros_I=np.hstack((zeros,I))
+    frobenius_matrix=np.vstack((zeros_I,-(coef_final.reshape(1,-1))))
+    return frobenius_matrix
+
     """Funkcja służąca do wyznaczenia macierzy Frobeniusa na podstawie
     współczynników jej wielomianu charakterystycznego:
     w(x) = a_n*x^n + a_{n-1}*x^{n-1} + ... + a_2*x^2 + a_1*x + a_0
@@ -48,10 +80,26 @@ def frob_a(coef: np.ndarray) -> np.ndarray | None:
         (np.ndarray): Macierz Frobeniusa o rozmiarze (n,n).
         Jeżeli dane wejściowe są niepoprawne funkcja zwraca `None`.
     """
-    pass
-
 
 def is_nonsingular(A: np.ndarray) -> bool | None:
+    
+    if not isinstance(A,np.ndarray):
+        return None
+    
+    if A.ndim != 2:
+        return None
+    
+    if len(A.shape) != 2:
+        return None
+    
+    try:
+        det_A = np.linalg.det(A)
+    except np.linalg.LinAlgError:
+        return None
+     
+    epsilon=1e-12
+
+    return abs(det_A)>epsilon
     """Funkcja sprawdzająca czy podana macierz NIE JEST singularna. Przy
     implementacji należy pamiętać o definicji zera maszynowego.
 
